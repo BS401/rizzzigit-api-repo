@@ -67,6 +67,10 @@ export interface NewsLinkContent extends NewsContent {
   link: string
 }
 
+export interface Picture extends BaseResource {
+  fileId: string
+}
+
 export interface Discography extends BaseResource {
 }
 
@@ -120,6 +124,10 @@ export class Models {
       newsId: { type: String, required: true },
       contentType: { type: Number, required: true }
     }).add(baseResourceSchema))
+
+    this.Picture = mongoose.model('Picture', new mongoose.Schema<Picture>({
+      fileId: { type: String, required: true }
+    }).add(baseResourceSchema))
   }
 
   #server: Server
@@ -136,4 +144,5 @@ export class Models {
   FileBuffer: Mongoose.Model<FileBuffer>
   News: Mongoose.Model<News>
   NewsContent: Mongoose.Model<NewsContent>
+  Picture: Mongoose.Model<Picture>
 }

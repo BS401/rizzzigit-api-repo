@@ -42,7 +42,6 @@ export class Server {
     }
     leanDocument(document) {
         const object = Object.assign({}, document.toJSON());
-        delete object._id;
         delete object.__v;
         return object;
     }
@@ -63,6 +62,7 @@ _Server_express = new WeakMap(), _Server_options = new WeakMap(), _Server_mongoo
                 response.setHeader('Content-Length', data.length);
                 return data;
             })();
+            console.log(toSend.toString());
             if (request.method !== 'OPTIONS') {
                 response.write(toSend);
             }
@@ -74,11 +74,15 @@ _Server_express = new WeakMap(), _Server_options = new WeakMap(), _Server_mongoo
     return __awaiter(this, void 0, void 0, function* () {
         try {
             for (const { default: middleware } of [
+                yield import('./middlewares/cors.js'),
                 yield import('./middlewares/path-array.js'),
-                yield import('./middlewares/authentication.js'),
-                yield import('./middlewares/body.js')
+                yield import('./middlewares/body.js'),
+                yield import('./middlewares/authentication.js')
             ]) {
                 yield middleware(this, request, response);
+            }
+            if (request.method === 'OPTIONS') {
+                return null;
             }
             return yield this.execRoute(request, response, yield import('../routes/main.js'));
         }

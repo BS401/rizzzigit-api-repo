@@ -88,6 +88,7 @@ export class Server {
         return data
       })()
 
+      console.log(toSend.toString())
       if (request.method !== 'OPTIONS') {
         response.write(toSend)
       }
@@ -99,11 +100,16 @@ export class Server {
   async #runRequest (request: Express.Request, response: Express.Response): Promise<ServerResponse | null> {
     try {
       for (const { default: middleware } of [
+        await import('./middlewares/cors.js'),
         await import('./middlewares/path-array.js'),
-        await import('./middlewares/authentication.js'),
-        await import('./middlewares/body.js')
+        await import('./middlewares/body.js'),
+        await import('./middlewares/authentication.js')
       ]) {
         await middleware(this, request, response)
+      }
+
+      if (request.method === 'OPTIONS') {
+        return null
       }
 
       return await this.execRoute(request, response, await import('../routes/main.js'))
@@ -144,7 +150,6 @@ export class Server {
   public leanDocument<T>(document: Document<T>): Record<string, any> {
     const object = { ...document.toJSON() } as unknown as any
 
-    delete object._id
     delete object.__v
 
     return object

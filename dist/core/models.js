@@ -41,6 +41,9 @@ export class Models {
             newsId: { type: String, required: true },
             contentType: { type: Number, required: true }
         }).add(baseResourceSchema));
+        this.Picture = mongoose.model('Picture', new mongoose.Schema({
+            fileId: { type: String, required: true }
+        }).add(baseResourceSchema));
     }
     init(url, options) {
         return __awaiter(this, void 0, void 0, function* () {

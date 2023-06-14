@@ -11,7 +11,7 @@ const route: ServerRoute = async (server, request, response) => {
 
   const tokenId = pathArray[2]
   if (tokenId == null) {
-    throw new ResponseError(400, 'token-id get query required.')
+    throw new ResponseError(400, 'token-id required.')
   }
 
   const token = await UploadToken.findById(tokenId)

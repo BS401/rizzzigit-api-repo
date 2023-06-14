@@ -50,6 +50,9 @@ export interface NewsLinkContent extends NewsContent {
     name: string;
     link: string;
 }
+export interface Picture extends BaseResource {
+    fileId: string;
+}
 export interface Discography extends BaseResource {
 }
 export interface Schedule extends BaseResource {
@@ -68,4 +71,5 @@ export declare class Models {
     FileBuffer: Mongoose.Model<FileBuffer>;
     News: Mongoose.Model<News>;
     NewsContent: Mongoose.Model<NewsContent>;
+    Picture: Mongoose.Model<Picture>;
 }

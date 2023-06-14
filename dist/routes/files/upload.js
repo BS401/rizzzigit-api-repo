@@ -9,7 +9,7 @@ const route = (server, request, response) => __awaiter(void 0, void 0, void 0, f
     const { models: { UploadToken, File, FileBuffer } } = server;
     const tokenId = pathArray[2];
     if (tokenId == null) {
-        throw new ResponseError(400, 'token-id get query required.');
+        throw new ResponseError(400, 'token-id required.');
     }
     const token = yield UploadToken.findById(tokenId);
     if ((token == null) ||
