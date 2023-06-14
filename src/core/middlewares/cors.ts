@@ -2,7 +2,8 @@ import { type ServerMiddleware } from '../server.js'
 
 const allowedOrigins: string[] = [
   'http://localhost:8080',
-  'https://twice-fan-page.rizzzigit.repl.co'
+  'https://twice-fan-page.rizzzigit.repl.co',
+  'http://10.0.0.13:8080'
 ]
 
 const middleware: ServerMiddleware = async (server, request, response) => {

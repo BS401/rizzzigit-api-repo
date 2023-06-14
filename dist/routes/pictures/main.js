@@ -13,7 +13,8 @@ export const route = (server, request, response) => __awaiter(void 0, void 0, vo
                 const length = Number(lengthStr);
                 let query = Picture.find({}, {}, {
                     sort: {
-                        createDate: -1
+                        createDate: -1,
+                        _id: -1
                     }
                 });
                 if (!Number.isNaN(offset)) {

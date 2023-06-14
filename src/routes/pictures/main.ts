@@ -15,7 +15,8 @@ export const route: ServerRoute = async (server, request, response) => {
 
         let query = Picture.find({}, {}, {
           sort: {
-            createDate: -1
+            createDate: -1,
+            _id: -1
           }
         })
 
