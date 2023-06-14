@@ -14,7 +14,8 @@ const route: ServerRoute = async (server, request, response) => {
 
     let query = News.find({}, undefined, {
       sort: {
-        createTime: -1
+        createTime: -1,
+        _id: -1
       }
     })
 

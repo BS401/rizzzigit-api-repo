@@ -14,6 +14,7 @@ const route = (server, request, response) => __awaiter(void 0, void 0, void 0, f
     }
     if (pathArray[2] === 'raw') {
         response.setHeader('Content-Length', file.size);
+        response.setHeader('Cache-Control', 'max-age=86400');
         for (const fileBufferMetadata of yield FileBuffer.find({ fileId: file.id }, { blockSize: 1, _id: 1 })) {
             response.write((_d = (yield FileBuffer.findById(fileBufferMetadata._id))) === null || _d === void 0 ? void 0 : _d.data);
         }

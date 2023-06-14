@@ -18,6 +18,8 @@ const route: ServerRoute = async (server, request, response) => {
 
   if (pathArray[2] === 'raw') {
     response.setHeader('Content-Length', file.size)
+    response.setHeader('Cache-Control', 'max-age=86400')
+
     for (const fileBufferMetadata of await FileBuffer.find({ fileId: file.id }, { blockSize: 1, _id: 1 })) {
       response.write((await FileBuffer.findById(fileBufferMetadata._id))?.data)
     }

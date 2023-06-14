@@ -11,7 +11,8 @@ const route = (server, request, response) => __awaiter(void 0, void 0, void 0, f
         const length = Number(lengthStr);
         let query = News.find({}, undefined, {
             sort: {
-                createTime: -1
+                createTime: -1,
+                _id: -1
             }
         });
         if (!Number.isNaN(offset)) {
