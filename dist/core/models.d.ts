@@ -1,4 +1,3 @@
-/// <reference types="node" resolution-mode="require"/>
 import type Mongoose from 'mongoose';
 import { type Server } from './server.js';
 export interface BaseResource {

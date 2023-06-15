@@ -1,6 +1,5 @@
 /// <reference types="node" resolution-mode="require"/>
 /// <reference types="node" resolution-mode="require"/>
-/// <reference types="node" resolution-mode="require"/>
 import Express from 'express';
 import Mongoose from 'mongoose';
 import type HTTP from 'http';

@@ -120,10 +120,15 @@ export class Models {
       thumbnail: { type: String, required: true }
     }).add(baseResourceSchema))
 
-    this.NewsContent = mongoose.model('NewsContent', new mongoose.Schema<NewsContent>({
+    this.NewsContent = mongoose.model('NewsContent', new mongoose.Schema({
       newsId: { type: String, required: true },
-      contentType: { type: Number, required: true }
-    }).add(baseResourceSchema))
+      contentType: { type: Number, required: true },
+
+      url: { type: String, required: false },
+      name: { type: String, required: false },
+      link: { type: String, required: false },
+      content: { type: String, required: false }
+    }).add(baseResourceSchema)) as unknown as Mongoose.Model<NewsContent>
 
     this.Picture = mongoose.model('Picture', new mongoose.Schema<Picture>({
       fileId: { type: String, required: true }

@@ -39,7 +39,11 @@ export class Models {
         }).add(baseResourceSchema));
         this.NewsContent = mongoose.model('NewsContent', new mongoose.Schema({
             newsId: { type: String, required: true },
-            contentType: { type: Number, required: true }
+            contentType: { type: Number, required: true },
+            url: { type: String, required: false },
+            name: { type: String, required: false },
+            link: { type: String, required: false },
+            content: { type: String, required: false }
         }).add(baseResourceSchema));
         this.Picture = mongoose.model('Picture', new mongoose.Schema({
             fileId: { type: String, required: true }

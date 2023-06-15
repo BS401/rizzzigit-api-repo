@@ -21,12 +21,13 @@ const middleware: ServerMiddleware = async (server, request, response) => {
     }
 
     const mime = request.header('Content-Type')?.toLowerCase()?.split('/').slice(0, 2) ?? []
+    if (contentLength > 1024 * 1024 * 100) {
+      throw new ResponseError(400, 'Content-length too large.')
+    }
     switch (mime[0]) {
       case 'application': {
         if (mime[1] !== 'json') {
           throw new ResponseError(400, 'Invalid content-type header.')
-        } else if (contentLength > 4096) {
-          throw new ResponseError(400, 'Content-length too large.')
         }
 
         for await (const buffer of request) {
@@ -44,16 +45,6 @@ const middleware: ServerMiddleware = async (server, request, response) => {
 
         return JSON.parse(Buffer.concat(buffers).toString())
       }
-
-      case 'image': {
-        if (contentLength > 1024 * 1024 * 8) {
-          throw new ResponseError(400, 'Content-length too large.')
-        }
-
-        break
-      }
-
-      default: throw new ResponseError(400, 'Invalid content-type header.')
     }
   })()
 }

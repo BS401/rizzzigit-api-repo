@@ -17,13 +17,13 @@ const middleware = (server, request, response) => __awaiter(void 0, void 0, void
             throw new ResponseError(400, 'Invalid content-length header.');
         }
         const mime = (_f = (_e = (_d = request.header('Content-Type')) === null || _d === void 0 ? void 0 : _d.toLowerCase()) === null || _e === void 0 ? void 0 : _e.split('/').slice(0, 2)) !== null && _f !== void 0 ? _f : [];
+        if (contentLength > 1024 * 1024 * 100) {
+            throw new ResponseError(400, 'Content-length too large.');
+        }
         switch (mime[0]) {
             case 'application': {
                 if (mime[1] !== 'json') {
                     throw new ResponseError(400, 'Invalid content-type header.');
-                }
-                else if (contentLength > 4096) {
-                    throw new ResponseError(400, 'Content-length too large.');
                 }
                 try {
                     for (var _g = true, request_1 = __asyncValues(request), request_1_1; request_1_1 = yield request_1.next(), _a = request_1_1.done, !_a; _g = true) {
@@ -49,13 +49,6 @@ const middleware = (server, request, response) => __awaiter(void 0, void 0, void
                 }
                 return JSON.parse(Buffer.concat(buffers).toString());
             }
-            case 'image': {
-                if (contentLength > 1024 * 1024 * 8) {
-                    throw new ResponseError(400, 'Content-length too large.');
-                }
-                break;
-            }
-            default: throw new ResponseError(400, 'Invalid content-type header.');
         }
     }))();
 });

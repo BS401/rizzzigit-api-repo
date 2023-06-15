@@ -64,6 +64,7 @@ export class Server {
     express.use((await import('cookie-parser')).default())
     express.use((request, response) => { void this.#onRequest(request, response) })
     await this.models.init(this.#options.mongoose.url, this.#options.mongoose.connectOptions)
+    void new (await import('../core/naver.js')).NaverPollingClient(this, this.#mongoose)
   }
 
   public readonly models: Models
@@ -88,7 +89,6 @@ export class Server {
         return data
       })()
 
-      console.log(toSend.toString())
       if (request.method !== 'OPTIONS') {
         response.write(toSend)
       }

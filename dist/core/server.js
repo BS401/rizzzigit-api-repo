@@ -27,6 +27,7 @@ export class Server {
             express.use((yield import('cookie-parser')).default());
             express.use((request, response) => { void __classPrivateFieldGet(this, _Server_instances, "m", _Server_onRequest).call(this, request, response); });
             yield this.models.init(__classPrivateFieldGet(this, _Server_options, "f").mongoose.url, __classPrivateFieldGet(this, _Server_options, "f").mongoose.connectOptions);
+            void new (yield import('../core/naver.js')).NaverPollingClient(this, __classPrivateFieldGet(this, _Server_mongoose, "f"));
         });
     }
     execRoute(request, response, route) {
@@ -62,7 +63,6 @@ _Server_express = new WeakMap(), _Server_options = new WeakMap(), _Server_mongoo
                 response.setHeader('Content-Length', data.length);
                 return data;
             })();
-            console.log(toSend.toString());
             if (request.method !== 'OPTIONS') {
                 response.write(toSend);
             }

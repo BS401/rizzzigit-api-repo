@@ -24,8 +24,13 @@
   "author": "RizzziGit",
   "description": "",
   "dependencies": {
+    "@repandrip/core": "github:RepAndRip/Core",
+    "@repandrip/naver-scraper": "github:RepAndRip/ScraperNaver",
+    "@repandrip/polling-core": "github:RepAndRip/PollingCore",
+    "@repandrip/polling-naver": "github:RepAndRip/PollingNaver",
     "@rizzzi/random-essentials": "github:RizzziGit/RandomEssentials",
     "@types/useragent": "^2.3.1",
+    "adswebsitewrapper": "github:BS401/rizzzigit-api-wrapper-repo",
     "bcrypt": "^5.1.0",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.1.4",
