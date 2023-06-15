@@ -1,7 +1,7 @@
 import { __awaiter } from "tslib";
 const allowedOrigins = [
     'http://localhost:8080',
-    'https://twice-api.cjoma.repl.co'
+    'https://twice.cjoma.repl.co'
 ];
 const middleware = (server, request, response) => __awaiter(void 0, void 0, void 0, function* () {
     const originHeader = request.header('origin');
