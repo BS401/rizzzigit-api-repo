@@ -5,12 +5,12 @@ export const parseContent = (contents) => {
     for (const rawContent of contents) {
         switch (rawContent.contentType) {
             case NewsContentType.Image:
-                if (!((typeof (rawContent.url) === 'string'))) {
+                if (!((typeof (rawContent.pictureId) === 'string'))) {
                     throw new ResponseError(400, 'Invalid payload.');
                 }
                 parsedContents.push({
                     contentType: NewsContentType.Image,
-                    url: rawContent.url
+                    pictureId: rawContent.pictureId
                 });
                 break;
             case NewsContentType.Link:

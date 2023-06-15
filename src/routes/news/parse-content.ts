@@ -14,7 +14,7 @@ export const parseContent = (contents: any): ParsedNewsContent[] => {
     switch (rawContent.contentType) {
       case NewsContentType.Image:
         if (!(
-          (typeof (rawContent.url) === 'string')
+          (typeof (rawContent.pictureId) === 'string')
         )) {
           throw new ResponseError(400, 'Invalid payload.')
         }
@@ -22,7 +22,7 @@ export const parseContent = (contents: any): ParsedNewsContent[] => {
         parsedContents.push({
           contentType: NewsContentType.Image,
 
-          url: rawContent.url
+          pictureId: rawContent.pictureId
         })
         break
 

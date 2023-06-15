@@ -51,7 +51,7 @@ export interface NewsContent extends BaseResource {
 export interface NewsImageContent extends NewsContent {
   contentType: NewsContentType.Image
 
-  url: string
+  pictureId: string
 }
 
 export interface NewsTextContent extends NewsContent {
@@ -124,7 +124,7 @@ export class Models {
       newsId: { type: String, required: true },
       contentType: { type: Number, required: true },
 
-      url: { type: String, required: false },
+      pictureId: { type: String, required: false },
       name: { type: String, required: false },
       link: { type: String, required: false },
       content: { type: String, required: false }

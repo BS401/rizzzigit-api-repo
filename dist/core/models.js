@@ -40,7 +40,7 @@ export class Models {
         this.NewsContent = mongoose.model('NewsContent', new mongoose.Schema({
             newsId: { type: String, required: true },
             contentType: { type: Number, required: true },
-            url: { type: String, required: false },
+            pictureId: { type: String, required: false },
             name: { type: String, required: false },
             link: { type: String, required: false },
             content: { type: String, required: false }

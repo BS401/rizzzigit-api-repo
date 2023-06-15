@@ -6,10 +6,9 @@ import Polling from '@repandrip/polling-core'
 import Crypto from 'crypto'
 import FS from 'fs'
 
-import { Client } from 'adswebsitewrapper'
-
 import { type Server } from './server.js'
 import { NewsContentType } from './models.js'
+import { Client, type PictureResource } from 'adswebsitewrapper'
 
 export class NaverPollingClient {
   public constructor (server: Server, mongoose: Mongoose.Mongoose) {
@@ -27,15 +26,19 @@ export class NaverPollingClient {
         value: { type: Object, required: false }
       }))
 
-      return {
-        set: async (key, value) => {
+      const c = {
+        set: async (key: string, value: any): Promise<void> => {
           await ConfigModel.deleteMany({ key })
           await ConfigModel.create({ key, value })
         },
-        get: async (key) => { return (await ConfigModel.findOne({ key }))?.value },
-        isset: async (key) => { return await ConfigModel.exists({ key }) != null },
-        unset: async (key) => { await ConfigModel.deleteMany({ key }) }
+        get: async (key: string): Promise<any> => { return (await ConfigModel.findOne({ key }))?.value },
+        isset: async (key: string): Promise<boolean> => { return await ConfigModel.exists({ key }) != null },
+        unset: async (key: string): Promise<void> => { await ConfigModel.deleteMany({ key }) }
       }
+
+      void c.set('series_517466_latestPostId', 17062272)
+
+      return c
     })())
     this.#naver = new Naver.Client(this.#client)
     this.#naverPolling = new NaverPolling.PollingWorker(this.#polling)
@@ -85,64 +88,16 @@ export class NaverPollingClient {
     await this.#polling.add(this.#naverPolling)
 
     const onPost = async (post: Naver.Post): Promise<void> => {
-      const { models: { News, NewsContent } } = this.#server
+      const contents: any[] = []
 
-      const thumbnail: string | null = await (async () => {
-        if (Array.isArray(post.body)) {
-          for (const entry of post.body) {
-            if (entry.type === 'image') {
-              const dest = `/tmp/${Crypto.randomInt(10000)}.${Date.now()}`
-              try {
-                await entry.download('thumb', dest)
-                const buffer = await FS.promises.readFile(dest)
-
-                console.log('Uploading downloaded file.')
-
-                const file = await client.resources.files.upload(Uint8Array.from(buffer))
-                return file.id
-              } catch (e) {
-                console.log(e)
-              } finally {
-                if (FS.existsSync(dest)) {
-                  FS.unlinkSync(dest)
-                }
-              }
-            }
-          }
-        } else {
-          console.log(`Post ${post.ID} is skipped.`)
-        }
-
-        return null
-      })()
-
-      if (thumbnail == null) {
-        return
-      }
-      console.log(`Thumbnail for news: ${post.ID} ${thumbnail}`)
-
-      const news = await News.create({
-        createTime: Date.now(),
-        updateTime: Date.now(),
-
-        title: post.title,
-        thumbnail
-      })
-
-      console.log(`News ID: ${news.id as string}`)
       if (Array.isArray(post.body)) {
         for (const postContent of post.body) {
           switch (postContent.type) {
             case 'text': {
-              await NewsContent.create({
-                createTime: Date.now(),
-                updateTime: Date.now(),
-
-                newsId: news.id,
+              contents.push({
                 contentType: NewsContentType.Text,
                 content: postContent.content
               })
-
               break
             }
 
@@ -155,13 +110,9 @@ export class NaverPollingClient {
 
                 const file = await client.resources.files.upload(Uint8Array.from(buffer))
 
-                await NewsContent.create({
-                  createTime: Date.now(),
-                  updateTime: Date.now(),
-
-                  newsId: news.id,
+                contents.push({
                   contentType: NewsContentType.Image,
-                  url: file.rawUrl.toString()
+                  pictureId: (await client.resources.pictures.create(file)).id
                 })
               } catch {} finally {
                 if (FS.existsSync(dest)) {
@@ -172,11 +123,7 @@ export class NaverPollingClient {
             }
 
             case 'link': {
-              await NewsContent.create({
-                createTime: Date.now(),
-                updateTime: Date.now(),
-
-                newsId: news.id,
+              contents.push({
                 contentType: NewsContentType.Link,
                 name: postContent.link.toString(),
                 link: postContent.link.toString()
@@ -186,9 +133,28 @@ export class NaverPollingClient {
           }
         }
       }
+
+      let thumbnail: string | null = null
+      for (const content of contents) {
+        if (content.contentType !== NewsContentType.Image) {
+          continue
+        }
+
+        thumbnail = content.pictureId
+      }
+
+      if (thumbnail == null) {
+        return
+      }
+
+      try {
+        await client.resources.news.create(post.title, { id: thumbnail } as unknown as PictureResource, contents)
+      } catch (e) {
+        console.log(e)
+      }
     }
 
-    subscription.events.on('post', async (post) => { await onPost(post) })
+    subscription.events.on('post', async (post) => { void onPost(post).catch(console.log) })
 
     void (async () => {
       while (true) {

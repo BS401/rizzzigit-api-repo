@@ -38,7 +38,7 @@ export interface NewsContent extends BaseResource {
 }
 export interface NewsImageContent extends NewsContent {
     contentType: NewsContentType.Image;
-    url: string;
+    pictureId: string;
 }
 export interface NewsTextContent extends NewsContent {
     contentType: NewsContentType.Text;

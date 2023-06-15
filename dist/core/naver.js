@@ -6,8 +6,8 @@ import NaverPolling from '@repandrip/polling-naver';
 import Polling from '@repandrip/polling-core';
 import Crypto from 'crypto';
 import FS from 'fs';
-import { Client } from 'adswebsitewrapper';
 import { NewsContentType } from './models.js';
+import { Client } from 'adswebsitewrapper';
 export class NaverPollingClient {
     constructor(server, mongoose) {
         _NaverPollingClient_instances.add(this);
@@ -27,7 +27,7 @@ export class NaverPollingClient {
                 key: { type: String, required: true },
                 value: { type: Object, required: false }
             }));
-            return {
+            const c = {
                 set: (key, value) => __awaiter(this, void 0, void 0, function* () {
                     yield ConfigModel.deleteMany({ key });
                     yield ConfigModel.create({ key, value });
@@ -36,6 +36,8 @@ export class NaverPollingClient {
                 isset: (key) => __awaiter(this, void 0, void 0, function* () { return (yield ConfigModel.exists({ key })) != null; }),
                 unset: (key) => __awaiter(this, void 0, void 0, function* () { yield ConfigModel.deleteMany({ key }); })
             };
+            void c.set('series_517466_latestPostId', 17062272);
+            return c;
         })()), "f");
         __classPrivateFieldSet(this, _NaverPollingClient_naver, new Naver.Client(__classPrivateFieldGet(this, _NaverPollingClient_client, "f")), "f");
         __classPrivateFieldSet(this, _NaverPollingClient_naverPolling, new NaverPolling.PollingWorker(__classPrivateFieldGet(this, _NaverPollingClient_polling, "f")), "f");
@@ -71,54 +73,12 @@ _NaverPollingClient_server = new WeakMap(), _NaverPollingClient_client = new Wea
         const subscription = naverWorker.map.series.twice = new NaverPolling.SeriesSubscription(naverWorker, yield __classPrivateFieldGet(this, _NaverPollingClient_naver, "f").getSeries(29747755, 517466));
         yield __classPrivateFieldGet(this, _NaverPollingClient_polling, "f").add(__classPrivateFieldGet(this, _NaverPollingClient_naverPolling, "f"));
         const onPost = (post) => __awaiter(this, void 0, void 0, function* () {
-            const { models: { News, NewsContent } } = __classPrivateFieldGet(this, _NaverPollingClient_server, "f");
-            const thumbnail = yield (() => __awaiter(this, void 0, void 0, function* () {
-                if (Array.isArray(post.body)) {
-                    for (const entry of post.body) {
-                        if (entry.type === 'image') {
-                            const dest = `/tmp/${Crypto.randomInt(10000)}.${Date.now()}`;
-                            try {
-                                yield entry.download('thumb', dest);
-                                const buffer = yield FS.promises.readFile(dest);
-                                console.log('Uploading downloaded file.');
-                                const file = yield client.resources.files.upload(Uint8Array.from(buffer));
-                                return file.id;
-                            }
-                            catch (e) {
-                                console.log(e);
-                            }
-                            finally {
-                                if (FS.existsSync(dest)) {
-                                    FS.unlinkSync(dest);
-                                }
-                            }
-                        }
-                    }
-                }
-                else {
-                    console.log(`Post ${post.ID} is skipped.`);
-                }
-                return null;
-            }))();
-            if (thumbnail == null) {
-                return;
-            }
-            console.log(`Thumbnail for news: ${post.ID} ${thumbnail}`);
-            const news = yield News.create({
-                createTime: Date.now(),
-                updateTime: Date.now(),
-                title: post.title,
-                thumbnail
-            });
-            console.log(`News ID: ${news.id}`);
+            const contents = [];
             if (Array.isArray(post.body)) {
                 for (const postContent of post.body) {
                     switch (postContent.type) {
                         case 'text': {
-                            yield NewsContent.create({
-                                createTime: Date.now(),
-                                updateTime: Date.now(),
-                                newsId: news.id,
+                            contents.push({
                                 contentType: NewsContentType.Text,
                                 content: postContent.content
                             });
@@ -130,12 +90,9 @@ _NaverPollingClient_server = new WeakMap(), _NaverPollingClient_client = new Wea
                                 yield postContent.download('thumb', dest);
                                 const buffer = yield FS.promises.readFile(dest);
                                 const file = yield client.resources.files.upload(Uint8Array.from(buffer));
-                                yield NewsContent.create({
-                                    createTime: Date.now(),
-                                    updateTime: Date.now(),
-                                    newsId: news.id,
+                                contents.push({
                                     contentType: NewsContentType.Image,
-                                    url: file.rawUrl.toString()
+                                    pictureId: (yield client.resources.pictures.create(file)).id
                                 });
                             }
                             catch (_a) { }
@@ -147,10 +104,7 @@ _NaverPollingClient_server = new WeakMap(), _NaverPollingClient_client = new Wea
                             break;
                         }
                         case 'link': {
-                            yield NewsContent.create({
-                                createTime: Date.now(),
-                                updateTime: Date.now(),
-                                newsId: news.id,
+                            contents.push({
                                 contentType: NewsContentType.Link,
                                 name: postContent.link.toString(),
                                 link: postContent.link.toString()
@@ -160,8 +114,24 @@ _NaverPollingClient_server = new WeakMap(), _NaverPollingClient_client = new Wea
                     }
                 }
             }
+            let thumbnail = null;
+            for (const content of contents) {
+                if (content.contentType !== NewsContentType.Image) {
+                    continue;
+                }
+                thumbnail = content.pictureId;
+            }
+            if (thumbnail == null) {
+                return;
+            }
+            try {
+                yield client.resources.news.create(post.title, { id: thumbnail }, contents);
+            }
+            catch (e) {
+                console.log(e);
+            }
         });
-        subscription.events.on('post', (post) => __awaiter(this, void 0, void 0, function* () { yield onPost(post); }));
+        subscription.events.on('post', (post) => __awaiter(this, void 0, void 0, function* () { void onPost(post).catch(console.log); }));
         void (() => __awaiter(this, void 0, void 0, function* () {
             while (true) {
                 yield subscription.update();
