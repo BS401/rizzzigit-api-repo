@@ -36,7 +36,6 @@ export class NaverPollingClient {
                 isset: (key) => __awaiter(this, void 0, void 0, function* () { return (yield ConfigModel.exists({ key })) != null; }),
                 unset: (key) => __awaiter(this, void 0, void 0, function* () { yield ConfigModel.deleteMany({ key }); })
             };
-            void c.set('series_517466_latestPostId', 17062272);
             return c;
         })()), "f");
         __classPrivateFieldSet(this, _NaverPollingClient_naver, new Naver.Client(__classPrivateFieldGet(this, _NaverPollingClient_client, "f")), "f");
