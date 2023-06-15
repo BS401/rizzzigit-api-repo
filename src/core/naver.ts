@@ -36,8 +36,6 @@ export class NaverPollingClient {
         unset: async (key: string): Promise<void> => { await ConfigModel.deleteMany({ key }) }
       }
 
-      void c.set('series_517466_latestPostId', 17062272)
-
       return c
     })())
     this.#naver = new Naver.Client(this.#client)
