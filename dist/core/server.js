@@ -27,7 +27,7 @@ export class Server {
             express.use((yield import('cookie-parser')).default());
             express.use((request, response) => { void __classPrivateFieldGet(this, _Server_instances, "m", _Server_onRequest).call(this, request, response); });
             yield this.models.init(__classPrivateFieldGet(this, _Server_options, "f").mongoose.url, __classPrivateFieldGet(this, _Server_options, "f").mongoose.connectOptions);
-            void new ((yield import('../core/naver.js')).NaverPollingClient)(this, __classPrivateFieldGet(this, _Server_mongoose, "f"));
+            // void new ((await import('../core/naver.js')).NaverPollingClient)(this, this.#mongoose)
         });
     }
     execRoute(request, response, route) {
