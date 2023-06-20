@@ -13,6 +13,7 @@ const route = (server, request, response) => __awaiter(void 0, void 0, void 0, f
         case 'news': return yield server.execRoute(request, response, yield import('./news/main.js'));
         case 'p':
         case 'pictures': return yield server.execRoute(request, response, yield import('./pictures/main.js'));
+        case 'notice': return yield server.execRoute(request, response, yield import('./notice/main.js'));
         default: throw new ResponseError(400, 'Invalid path.');
     }
 });

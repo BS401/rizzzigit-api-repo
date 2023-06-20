@@ -17,6 +17,8 @@ const route: ServerRoute = async (server, request, response) => {
     case 'p':
     case 'pictures': return await server.execRoute(request, response, await import('./pictures/main.js'))
 
+    case 'notice': return await server.execRoute(request, response, await import('./notice/main.js'))
+
     default: throw new ResponseError(400, 'Invalid path.')
   }
 }
