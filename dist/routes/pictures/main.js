@@ -1,12 +1,17 @@
 import { __awaiter } from "tslib";
 import { ResponseError } from '../../core/server.js';
 export const route = (server, request, response) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a, _b, _c, _d;
     const { method, pathArray } = request;
     const { models: { File, Picture } } = server;
     switch (method) {
-        case 'GET': {
+        case 'DELETE': {
             const pictureId = (_b = (_a = pathArray[1]) === null || _a === void 0 ? void 0 : _a.trim().toLowerCase()) !== null && _b !== void 0 ? _b : '';
+            yield Picture.deleteOne({ _id: pictureId });
+            return server.createResponse(200);
+        }
+        case 'GET': {
+            const pictureId = (_d = (_c = pathArray[1]) === null || _c === void 0 ? void 0 : _c.trim().toLowerCase()) !== null && _d !== void 0 ? _d : '';
             if (pictureId === '') {
                 const { query: { offset: offsetStr, length: lengthStr } } = request;
                 const offset = Number(offsetStr);

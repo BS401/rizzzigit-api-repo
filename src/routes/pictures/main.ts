@@ -5,6 +5,13 @@ export const route: ServerRoute = async (server, request, response) => {
 
   const { models: { File, Picture } } = server
   switch (method) {
+    case 'DELETE': {
+      const pictureId = pathArray[1]?.trim().toLowerCase() ?? ''
+      await Picture.deleteOne({ _id: pictureId })
+
+      return server.createResponse(200)
+    }
+
     case 'GET': {
       const pictureId = pathArray[1]?.trim().toLowerCase() ?? ''
       if (pictureId === '') {

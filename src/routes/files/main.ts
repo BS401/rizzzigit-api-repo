@@ -1,7 +1,7 @@
 import { ResponseError, type ServerRoute } from '../../core/server.js'
 
 const route: ServerRoute = async (server, request, response) => {
-  const { method } = request
+  const { method, pathArray } = request
 
   const fileId = request.pathArray[1]?.toLowerCase() ?? ''
   switch (fileId) {
@@ -18,6 +18,13 @@ const route: ServerRoute = async (server, request, response) => {
 
     default: {
       switch (method) {
+        case 'DELETE': {
+          const fileId = pathArray[1]?.trim().toLowerCase() ?? ''
+          await server.models.File.deleteOne({ _id: fileId })
+
+          return server.createResponse(200)
+        }
+
         case 'OPTIONS':
         case 'GET': return await server.execRoute(request, response, await import('./method-get.js'))
 
