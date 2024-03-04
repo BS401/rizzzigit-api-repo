@@ -8,12 +8,12 @@ const allowedOrigins: string[] = [
 const middleware: ServerMiddleware = async (server, request, response) => {
   const originHeader = request.header('origin')
 
-  if ((originHeader != null) && allowedOrigins.includes(originHeader)) {
+  // if ((originHeader != null) && allowedOrigins.includes(originHeader)) {
     response.setHeader('Access-Control-Allow-Methods', '*')
     response.setHeader('Access-Control-Allow-Headers', '*')
     response.setHeader('Access-Control-Allow-Origin', '*')
     response.setHeader('Access-Control-Max-Age', '*')
-  }
+  // }
 }
 
 export default middleware
